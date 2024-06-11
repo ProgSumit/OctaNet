@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TO DO List</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+            box-sizing: border-box;
+            border: black;
+        }
+        .container {
+            width: 100%;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #153677, #4e085f);
+            padding: 10px;
+        }
+        .todoapp {
+            width: 100%;
+            max-width: 540px;
+            background: #fff;
+            margin: 100px auto 20px;
+            padding: 40px 30px 70px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .todoapp h2 {
+            color: #002765;
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .todoapp h2 img {
+            width: 30px;
+            margin-left: 10px;
+        }
+        .row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #edeef0;
+            border-radius: 30px;
+            padding-left: 20px;
+            margin-bottom: 25px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        input[type="text"] {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            padding: 10px;
+            font-size: 14px;
+        }
+        button {
+            border: none;
+            outline: none;
+            padding: 16px 50px;
+            background: #ff5945;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 40px;
+            transition: background 0.3s;
+        }
+        ul {
+            padding: 0;
+            margin-top: 20px;
+        }
+        ul li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            list-style: none;
+            font-size: 17px;
+            padding: 12px 8px;
+            user-select: none;
+            cursor: pointer;
+            position: relative;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            transition: background 0.3s;
+        }
+        ul li:hover {
+            background: #f0f0f0;
+        }
+        ul li input[type="checkbox"] {
+            margin-right: 10px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #ff5945;
+        }
+        ul li .task-text {
+            flex: 1;
+            margin-right: 10px;
+        }
+        ul li.completed .task-text {
+            text-decoration: line-through;
+            color: gray;
+        }
+        .task-date {
+            font-size: 12px;
+            color: gray;
+            margin-left: 10px;
+        }
+        .delete-button {
+            border: none;
+            outline: none;
+            background: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 5px;
+            padding: 8px 16px;
+            margin-left: 10px;
+        }
+        .completed-tasks h3 {
+            margin-top: 20px;
+            color: #002765;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="todoapp">
+            <h2>TO-DO List <img src="/todoimg.png"> </h2>
+                <div class="row">
+                    <input type="text" id="input-box" placeholder="Add text">
+                    <button onclick="addTask()">Add</button>
+                </div>
+                <ul id="list-container">
+                    <!-- Tasks will be added here -->
+                </ul>
+                <div class="completed-tasks">
+                    <h3>Completed Tasks</h3>
+                    <ul id="completed-list-container">
+                        <!-- Completed tasks will be moved here -->
+                    </ul>
+                </div>
+        </div>
+    </div>
+
+    <script>
+        function addTask() {
+            const inputBox = document.getElementById('input-box');
+            const taskText = inputBox.value.trim();
+            if (taskText !== '') {
+                const listContainer = document.getElementById('list-container');
+                const newTask = document.createElement('li');
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.onclick = function() { toggleTask(newTask); };
+                newTask.appendChild(checkbox);
+
+                const textSpan = document.createElement('span');
+                textSpan.className = 'task-text';
+                textSpan.textContent = taskText;
+                newTask.appendChild(textSpan);
+
+                const dateSpan = document.createElement('span');
+                dateSpan.className = 'task-date';
+                const now = new Date();
+                dateSpan.textContent = `Created: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+                newTask.appendChild(dateSpan);
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = '❌';
+                deleteButton.className = 'delete-button'; 
+                deleteButton.onclick = function() { deleteTask(newTask); };
+                newTask.appendChild(deleteButton);
+
+                listContainer.appendChild(newTask);
+                inputBox.value = '';
+            }
+        }
+
+        function toggleTask(task) {
+            const completedListContainer = document.getElementById('completed-list-container');
+            const listContainer = document.getElementById('list-container');
+            task.classList.toggle('completed');
+            const dateSpan = task.querySelector('.task-date');
+            if (task.classList.contains('completed')) {
+                const now = new Date();
+                dateSpan.textContent += ` | Completed: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+                completedListContainer.appendChild(task);
+            } else {
+                listContainer.appendChild(task);
+                dateSpan.textContent = dateSpan.textContent.split(' | ')[0]; // Remove the completed timestamp
+            }
+        }
+
+        function deleteTask(task) {
+            task.remove();
+        }
+
+        document.getElementById('input-box').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addTask();
+            }
+        });
+    </script>
+</body>
+</html>
